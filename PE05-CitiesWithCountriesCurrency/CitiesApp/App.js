@@ -9,21 +9,22 @@ LogBox.ignoreLogs([
   'Non-serializable values were found in the navigation state',
 ]);
 
-// ---- City/Cities screens (existing) ----
+// ---- City/Cities screens (unchanged) ----
 import Cities from './src/Cities/Cities';
 import City from './src/Cities/City';
 import AddCity from './src/AddCity/AddCity';
 
-// ---- Country/Countries screens (new) ----
+// ---- Country folders (moved) ----
 import Countries from './src/Countries/Countries';
-import AddCountry from './src/Countries/AddCountry';
+import Country from './src/Countries/Country';
+import AddCountry from './src/AddCountry/AddCountry';
 
 import { colors } from './src/theme';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// We still wrap Cities + City in a stack:
+// ---------------- Cities Stack ----------------
 function CitiesStackScreen({ navigation, route, cities, addCity, addLocation }) {
   return (
     <Stack.Navigator
@@ -58,13 +59,35 @@ function CitiesStackScreen({ navigation, route, cities, addCity, addLocation }) 
   );
 }
 
+// -------------- Countries Stack ----------------
+function CountriesStackScreen({ navigation, route, countries }) {
+  return (
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.primary },
+        headerTintColor: '#fff',
+      }}
+    >
+      <Stack.Screen
+        name="CountriesList"
+        children={(props) => <Countries {...props} countries={countries} />}
+        options={{ title: 'Countries' }}
+      />
+      <Stack.Screen
+        name="Country"
+        children={(props) => <Country {...props} countries={countries} />}
+      />
+    </Stack.Navigator>
+  );
+}
+
 export default class App extends Component {
   state = {
     cities: [],
-    countries: [],   // ← NEW slice of state
+    countries: [],
   };
 
-  // ---------- existing methods for cities ----------
+  // ------ Existing City methods ------
   addCity = (city) => {
     this.setState((prevState) => ({
       cities: [...prevState.cities, { ...city, locations: [] }],
@@ -85,7 +108,7 @@ export default class App extends Component {
     this.setState({ cities });
   };
 
-  // ---------- NEW: methods for countries ----------
+  // ------ New Country methods ------
   addCountry = (country) => {
     this.setState((prevState) => ({
       countries: [...prevState.countries, country],
@@ -95,14 +118,12 @@ export default class App extends Component {
   render() {
     return (
       <NavigationContainer>
-        {/** Make the Countries tab the default/initial route */}
+        {/** Default to Countries tab */}
         <Tab.Navigator
           initialRouteName="Countries"
-          screenOptions={{
-            headerShown: false, // sub‐stacks/screens will show their own headers
-          }}
+          screenOptions={{ headerShown: false }}
         >
-          {/* -------- Cities tab (stack) -------- */}
+          {/* Cities Stack Navigator */}
           <Tab.Screen
             name="CitiesNav"
             options={{ title: 'Cities' }}
@@ -116,7 +137,7 @@ export default class App extends Component {
             )}
           />
 
-          {/* -------- AddCity tab -------- */}
+          {/* AddCity */}
           <Tab.Screen
             name="AddCity"
             options={{ title: 'Add City' }}
@@ -130,19 +151,19 @@ export default class App extends Component {
             )}
           />
 
-          {/* -------- NEW: Countries list tab -------- */}
+          {/* Countries Stack Navigator */}
           <Tab.Screen
             name="Countries"
             options={{ title: 'Countries' }}
             children={(props) => (
-              <Countries
+              <CountriesStackScreen
                 {...props}
                 countries={this.state.countries}
               />
             )}
           />
 
-          {/* -------- NEW: AddCountry tab -------- */}
+          {/* AddCountry */}
           <Tab.Screen
             name="AddCountry"
             options={{ title: 'Add Country' }}

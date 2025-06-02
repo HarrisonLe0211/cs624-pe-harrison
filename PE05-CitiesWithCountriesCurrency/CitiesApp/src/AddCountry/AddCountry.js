@@ -1,4 +1,4 @@
-// src/Countries/AddCountry.js
+// src/AddCountry/AddCountry.js
 import React from 'react';
 import {
   View,
@@ -35,15 +35,9 @@ export default class AddCountry extends React.Component {
 
     this.props.addCountry(newCountry);
 
-    this.setState(
-      {
-        name: '',
-        currency: '',
-      },
-      () => {
-        this.props.navigation.navigate('Countries');
-      }
-    );
+    this.setState({ name: '', currency: '' }, () => {
+      this.props.navigation.navigate('Countries');
+    });
   };
 
   render() {
@@ -51,7 +45,6 @@ export default class AddCountry extends React.Component {
       <View style={styles.container}>
         <Text style={styles.heading}>Add Country</Text>
 
-        {/* Country Name Input */}
         <TextInput
           placeholder="Country name"
           onChangeText={(val) => this.onChangeText('name', val)}
@@ -59,7 +52,6 @@ export default class AddCountry extends React.Component {
           value={this.state.name}
         />
 
-        {/* Currency Input */}
         <TextInput
           placeholder="Currency"
           onChangeText={(val) => this.onChangeText('currency', val)}
